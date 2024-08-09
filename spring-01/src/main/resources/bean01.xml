@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--创建对象的三种方式-->
+
+    <!--1、无参构造方法创建-->
+    <!--
+    1、依赖于无参构造，如果没有无参构造会报错
+    id、代表bean的名称
+    class、代表类的完整限定名
+    scope、代表作用范围，默认值为：singleton（单例）、还可以是：prototype（多例）
+    如果使用多例模式创建对象的话则不会执行destroy-method方法
+    -->
+    <bean id="student1" class="com.zyc.entity.Student" init-method="hello" destroy-method="bye"/>
+
+    <!--2、使用工厂创建-->
+    <!--1、现有一个工厂bean，再通过工厂创建对象-->
+    <bean id="factory" class="com.zyc.factory.StudentBeanFactory"/>
+    <bean id="student2" factory-bean="factory" factory-method="getStudent"/>
+
+    <!--3、使用静态工厂创建bean对象-->
+    <bean id="student3" class="com.zyc.factory.StudentBeanFactory" factory-method="getStu"/>
+</beans>

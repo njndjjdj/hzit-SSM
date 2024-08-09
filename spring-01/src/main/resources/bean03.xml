@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <!--1、引入另一个xml配置文件-->
+    <import resource="classpath:bean02.xml"/>
+
+    <!--为复杂属性进行赋值-->
+    <bean id="cb" class="com.zyc.entity.CollectionBean">
+        <!--为数组赋值-->
+        <property name="msg">
+            <array>
+                <value>胡帅1号</value>
+                <value>胡帅2号</value>
+                <value>胡帅3号</value>
+            </array>
+        </property>
+        <!--为list进行赋值-->
+        <property name="students">
+            <list>
+                <ref bean="student1"/>
+                <ref bean="student2"/>
+                <ref bean="student3"/>
+                <ref bean="student4"/>
+            </list>
+        </property>
+        <!--为map进行赋值-->
+        <property name="map">
+            <map>
+                <entry key="#{student1.id}" value="#{student1}"/>
+                <entry key="#{student2.id}" value="#{student2}"/>
+                <entry key="#{student3.id}" value="#{student3}"/>
+                <entry key="#{student4.id}" value="#{student4}"/>
+            </map>
+        </property>
+        <!--properties进行赋值-->
+        <property name="properties">
+            <props>
+                <prop key="db.driver">com.mysql.sj.jdbc.Driver</prop>
+                <prop key="db.url">jdbc:mysql://localhost:3306/bj2402</prop>
+                <prop key="db.username">root</prop>
+                <prop key="db.password">123456</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

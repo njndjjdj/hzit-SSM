@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--给bean对象属性赋值的方式-->
+
+    <!--1、通过setter方法-->
+    <bean id="student1" class="com.zyc.entity.Student">
+        <property name="id" value="1001"/>
+        <property name="name" value="胡帅"/>
+        <property name="age" value="100"/>
+    </bean>
+
+    <!--2、通过构造方法为属性赋值-->
+    <bean id="student2" class="com.zyc.entity.Student">
+        <constructor-arg name="id" value="1220"/>
+        <constructor-arg name="name" value="胡帅帅"/>
+        <constructor-arg name="age" value="1220"/>
+    </bean>
+
+    <!--3、使用p命名空间-->
+    <bean id="student3" class="com.zyc.entity.Student" p:id="1003" p:name="胡帅" p:age="100"/>
+
+    <!--4、使用spEl表达式进行赋值-->
+    <bean id="student4" class="com.zyc.entity.Student">
+        <property name="id" value="1004"/>
+        <property name="name" value="#{student1.name}"/>
+        <property name="age" value="#{student1.age}"/>
+    </bean>
+</beans>
