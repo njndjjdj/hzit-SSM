@@ -12,6 +12,8 @@
         <module>spring-01</module>
         <module>zyc-common</module>
         <module>SM-01</module>
+        <module>MyBatisGenerator</module>
+        <module>SSM-03</module>
     </modules>
 
     <properties>

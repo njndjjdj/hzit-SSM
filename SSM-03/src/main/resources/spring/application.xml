@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--1、引入属性文件-->
+    <context:property-placeholder location="classpath:properties/jdbc.properties"/>
+    <!--
+    2、配置包扫描
+    有四个注解：@Controller、@Service、@Component、@Repository
+    -->
+    <context:component-scan base-package="com.zyc"/>
+    <!--3、配置数据源连接池-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!--3、为数据库连接池指定属性值-->
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.user}"/>
+        <property name="password" value="${db.password}"/>
+    </bean>
+    <!--4、创建SqlSessionFactory-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--引入连接池-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--指定mybatis全局配置文件-->
+        <property name="configLocation" value="classpath:mybatis/mybatis-conf.xml"/>
+        <!--&lt;!&ndash;指定包别名&ndash;&gt;-->
+        <!--<property name="typeAliasesPackage" value="com.zyc.entity,com.zyc.vo"/>-->
+        <!--指定mapper映射文件的位置-->
+        <property name="mapperLocations" value="classpath:com/zyc/mapper/*.xml"/>
+        <!--配置分页插件-->
+        <property name="plugins">
+            <list>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+                            helperDialect=mysql
+                        </value>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!--5、配置mapper接口位置，并生成代理对象在spring容器中-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.zyc.mapper"/>
+    </bean>
+</beans>
