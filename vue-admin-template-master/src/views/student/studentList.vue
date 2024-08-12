@@ -10,16 +10,20 @@
                     <el-input v-model="studentSearch.studentName" placeholder="姓名"></el-input>
                 </el-form-item>
                 <el-form-item label="班级">
-                    <el-select v-model="studentSearch.classId" placeholder="班级">
+                    <el-select v-model="studentSearch.cid" placeholder="班级">
                         <el-option label="所有班级" value="-1"></el-option>
                         <el-option :label="c.className" :value="c.classId" v-for="c in classes" :key="c.classId" />
                     </el-select>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="search()">查询</el-button>
+                    <el-button type="success" @click="addStudent()">添加学生</el-button>
+                    <el-button type="danger" @click="deleteAllStudent()">批量删除</el-button>
                 </el-form-item>
             </el-form>
-            <el-table :data="studentList" style="width: 100%">
+            <el-table :data="studentList" style="width: 100%" @selection-change="handleSelectionChange">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
 
                 <el-table-column label="序号" type="index" align="center" width="60"> <!-- 可以设置宽度来适应行号的显示 -->
                 </el-table-column>
@@ -78,12 +82,42 @@
                 layout="total, sizes, prev, pager, next, jumper" :total="total">
             </el-pagination>
         </el-card>
+        <el-dialog :title="title" :visible.sync="dialogFormVisible" width="30%" :close-on-click-modal="false"
+            :show-close="false">
+            <el-form :model="editStudent">
+                <el-form-item label="学生姓名" :label-width="formLabelWidth">
+                    <el-input v-model="editStudent.studentName"></el-input>
+                </el-form-item>
+                <el-form-item label="年龄" :label-width="formLabelWidth">
+                    <el-input v-model="editStudent.studentAge"></el-input>
+                </el-form-item>
+                <el-form-item label="性别" :label-width="formLabelWidth">
+                    <el-select v-model="editStudent.sex" placeholder="请选择性别">
+                        <el-option label="男" value="W"></el-option>
+                        <el-option label="女" value="F"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="班级" :label-width="formLabelWidth">
+                    <el-select v-model="editStudent.cname" placeholder="请选择班级">
+                        <el-option :label="c.className" :value="c.className" v-for="c in classes" :key="c.classId" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="住址" :label-width="formLabelWidth">
+                    <el-input v-model="editStudent.addr"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="quxiao()">取 消</el-button>
+                <el-button type="primary" @click="save()">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import studentApi from "../../api/student.js"
 import classesApi from "../../api/classes.js"
+import classes from "../../api/classes.js"
 export default {
     data() {
         return {
@@ -93,6 +127,12 @@ export default {
             page: 1,
             pageSize: 5,
             total: 100,
+            dialogFormVisible: false,
+            title: '',
+            editStudent: {},
+            formLabelWidth: '80px',
+            multipleSelection: [],  // 代表勾选的要删除的多个学生数组
+            sids: [],// 要删除的学生编号（可以同时放一个若多个，即可以删除一个或多个学生）
         }
     },
     created() {
@@ -101,11 +141,102 @@ export default {
         this.findAllClasses()
     },
     methods: {
+        // 批量删除
+        handleSelectionChange(val) {
+            this.multipleSelection = val
+            this.sids = []
+            for (let i = 0; i < val.length; i++) {
+                const student = val[i]
+                this.sids.push(student.studentId)
+            }
+        },
+        deleteAllStudent() {
+            if (this.multipleSelection && this.multipleSelection.length === 0) {
+                this.openErr('您没有选择学生，请先选择')
+                return
+            }
+            studentApi.deleteAllStudent(this.sids).then((data) => {
+                if (data.code === 0) {
+                    this.openSuc("删除成功！")
+                } else {
+                    this.openIfno("删除失败！")
+                }
+                this.page = 1
+                this.search()
+            })
+
+        },
+        addStudent() {
+            this.title = "添加学生"
+            this.editStudent = {}
+            this.dialogFormVisible = true
+        },
+        quxiao() {
+            this.dialogFormVisible = false
+            this.editStudent = {}
+            this.title = ''
+            this.openIfno("你取消操作")
+        },
+        save() {
+            for (let i = 0; i < this.classes.length; i++) {
+                if (this.editStudent.cname == this.classes[i].className) {
+                    this.editStudent.cid = this.classes[i].classId
+                }
+            }
+            console.log("save", this.editStudent)
+            var msg = ''
+            // 检查studentId是否为null或undefined，如果是，则认为是添加
+            if (this.editStudent.studentId === null || this.editStudent.studentId === undefined) {
+                console.log("添加")
+                // 执行添加操作的代码
+                studentApi.addStudent(this.editStudent).then((data) => {
+                    if (data.code === 0) {
+                        msg = data.message
+                        this.openSuc(msg)
+                    }
+                })
+            } else {
+                // 如果studentId不是null或undefined，认为是修改
+                console.log("修改")
+                // 执行修改操作的代码
+                studentApi.updateStudent(this.editStudent).then((data) => {
+                    if (data.code === 0) {
+                        msg = data.message
+                        this.openSuc(msg)
+                    }
+                })
+            }
+            this.dialogFormVisible = false
+            this.search()
+        },
         handleEdit(id) {
-            alert(id)
+            this.title = "编辑信息"
+            this.dialogFormVisible = true
+            studentApi.findStudentById(id).then(({ data }) => {
+                this.editStudent = data.student
+            })
         },
         handleDelete(id) {
-            alert(id)
+            this.$confirm('此操作将永久删除该学生, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                studentApi.deleteStudentById(id).then((data) => {
+                    if (data.code === 0) {
+                        this.openSuc('删除成功!')
+                    } else {
+                        this.openErr('删除失败!')
+                    }
+                    this.page = 1
+                    this.search()
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                })
+            })
         },
         findAllStudentM() {
             studentApi.findAllStudent().then(({ data }) => {
@@ -122,8 +253,8 @@ export default {
                 console.log(this.studentSearch)
                 this.studentList = data.studentList.result
                 this.total = data.studentList.total
-                this.openSuc("查询成功")
             })
+            this.studentSearch = {}
         },
         handleSizeChange(pageSize) {
             this.pageSize = pageSize
@@ -138,6 +269,18 @@ export default {
             this.$message({
                 message: msg,
                 type: 'success'
+            })
+        },
+        openIfno(msg) {
+            this.$message({
+                message: msg,
+                type: 'info'
+            })
+        },
+        openErr(msg) {
+            this.$message({
+                message: msg,
+                type: 'error'
             })
         },
     },

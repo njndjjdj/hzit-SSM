@@ -26,4 +26,12 @@ public interface StudentService {
     List<StudentDto> findAllStudent();
 
     ResultPage<StudentDto> search(Integer page, Integer pageSize, SearchVO vo);
+
+    StudentDto findStudentById(Integer id);
+
+    String insertOrUpdateStudent(StudentDto studentDto);
+
+    void deleteStudentById(Integer id);
+
+    void deleteAllStudent(String ids);
 }

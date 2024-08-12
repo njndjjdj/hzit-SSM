@@ -100,7 +100,16 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.zyc.entity.po.Students">
+    <delete id="deleteAllStudent" parameterType="integer">
+      delete from students
+      <where>
+        student_id in
+             <foreach collection="studentIds" item="id" open="(" close=")" separator=",">
+               #{id}
+             </foreach>
+      </where>
+    </delete>
+    <insert id="insert" parameterType="com.zyc.entity.po.Students">
     insert into students (student_id, student_name, student_age, 
       sex, cid, addr)
     values (#{studentId,jdbcType=INTEGER}, #{studentName,jdbcType=VARCHAR}, #{studentAge,jdbcType=INTEGER}, 

@@ -3,6 +3,7 @@ package com.zyc.mapper;
 import com.zyc.entity.po.Students;
 import com.zyc.entity.query.StudentsExample;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -35,4 +36,6 @@ public interface StudentsMapper {
      * @return
      */
     List<Students> findAllStudent();
+
+    void deleteAllStudent(@Param("studentIds") ArrayList<Integer> studentIds);
 }

@@ -63,9 +63,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private static void getCname(List<StudentDto> studentDtoList, List<Classes> classesList) {
-        for (StudentDto studentDto : studentDtoList) {
+            for (StudentDto studentDto : studentDtoList) {
             for (Classes classes : classesList) {
-                if (studentDto.getCid().equals(classes.getClassId())) {
+                if (studentDto != null && studentDto.getCid().equals(classes.getClassId())) {
                     studentDto.setCname(classes.getClassName());
                 }
             }
@@ -111,5 +111,61 @@ public class StudentServiceImpl implements StudentService {
         List<Classes> classesList = classesMapper.findAllClasses();
         getCname(collect, classesList);
         return new ResultPage<>(studentPage.getTotal(), collect);
+    }
+
+    /**
+     * 根据id查询学生信息
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public StudentDto findStudentById(Integer id) {
+        Students students = studentsMapper.selectByPrimaryKey(id);
+        StudentDto studentDto = new StudentDto();
+        BeanUtil.copyProperties(students, studentDto);
+        List<Classes> classesList = classesMapper.findAllClasses();
+        for (Classes classes : classesList) {
+            if (classes.getClassId().equals(students.getCid())) {
+                studentDto.setCname(classes.getClassName());
+            }
+        }
+        studentDto.setSex(studentDto.getSex().equals("M") ? "男" : "女");
+        return studentDto;
+    }
+
+    /**
+     * 添加或修改
+     *
+     * @param studentDto
+     * @return
+     */
+    @Override
+    public String insertOrUpdateStudent(StudentDto studentDto) {
+        Integer studentId = studentDto.getStudentId();
+        Students student = new Students();
+        BeanUtil.copyProperties(studentDto, student);
+        if (studentId == null) {
+            studentsMapper.insert(student);
+            return "添加成功";
+        } else {
+            studentsMapper.updateByPrimaryKeySelective(student);
+            return "修改成功";
+        }
+    }
+
+    @Override
+    public void deleteStudentById(Integer id) {
+        studentsMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public void deleteAllStudent(String ids) {
+        String[] split = ids.split(",");
+        ArrayList<Integer> studentIds = new ArrayList<>();
+        for (String id : split) {
+            studentIds.add(Integer.parseInt(id));
+        }
+        studentsMapper.deleteAllStudent(studentIds);
     }
 }

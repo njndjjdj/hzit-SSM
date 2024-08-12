@@ -30,6 +30,7 @@ public class StudentController {
 
     /**
      * 查询所有学生
+     *
      * @return
      */
     @GetMapping("/findAllStudent")
@@ -44,7 +45,37 @@ public class StudentController {
             @PathVariable Integer pageSize,
             @RequestBody SearchVO vo
     ) {
-        ResultPage<StudentDto> studentList = studentService.search(page,pageSize,vo);
+        ResultPage<StudentDto> studentList = studentService.search(page, pageSize, vo);
         return R.ok().data("studentList", studentList);
+    }
+
+    /**
+     * 根据id查询学生
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping("/findStudentById/{id}")
+    public R findStudentById(@PathVariable("id") Integer id) {
+        StudentDto studentDto = studentService.findStudentById(id);
+        return R.ok().data("student", studentDto);
+    }
+
+    @RequestMapping("/insertOrUpdateStudent")
+    public R addStudent(@RequestBody StudentDto studentDto) {
+        String msg = studentService.insertOrUpdateStudent(studentDto);
+        return R.ok().message(msg);
+    }
+
+    @RequestMapping("/deleteStudentById/{id}")
+    public R deleteStudentById(@PathVariable Integer id) {
+        studentService.deleteStudentById(id);
+        return R.ok();
+    }
+
+    @RequestMapping("/deleteAllStudent/{ids}")
+    public R deleteAllStudent(@PathVariable("ids") String ids) {
+        studentService.deleteAllStudent(ids);
+        return R.ok();
     }
 }
