@@ -13,7 +13,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ResponseEnum {
     SUCCESS(0,"成功"),
-    ERROR(-1,"失败");
+    ERROR(-1,"失败"),
+    USERNAME_PASSWORD_ERROR(3,"用户名或密码错误！"),
+    USERNAME_ERROR(4,"用户名输入有误！"),
+    PASSWORD_ERROR(5,"密码输入有误！"),
+    ;
 
     private Integer code;
     private String message;

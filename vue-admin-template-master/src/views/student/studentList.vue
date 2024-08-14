@@ -17,8 +17,12 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="search()">查询</el-button>
-                    <el-button type="success" @click="addStudent()">添加学生</el-button>
-                    <el-button type="danger" @click="deleteAllStudent()">批量删除</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <span @click="addStudent()"><add-button /></span>
+                </el-form-item>
+                <el-form-item>
+                    <span @click="deleteAllStudent()"><delete-button /></span>
                 </el-form-item>
             </el-form>
             <el-table :data="studentList" style="width: 100%" @selection-change="handleSelectionChange">
@@ -34,7 +38,7 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="姓名">
+                <el-table-column label="姓名" align="center">
                     <template slot-scope="scope">
                         <el-popover trigger="hover" placement="top">
                             <p>姓名: {{ scope.row.studentName }}</p>
@@ -118,7 +122,14 @@
 import studentApi from "../../api/student.js"
 import classesApi from "../../api/classes.js"
 import classes from "../../api/classes.js"
+import DeleteButton from "../../components/buttons/b1.vue"
+import AddButton from "../../components/buttons/b2.vue"
 export default {
+    // 证明组件
+    components: {
+        DeleteButton,
+        AddButton
+    },
     data() {
         return {
             studentList: [],

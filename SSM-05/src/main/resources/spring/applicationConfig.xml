@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--导入数据库配置文件-->
+    <context:property-placeholder location="classpath:properties/jdbc.properties"/>
+
+    <!--配置包扫描路径，spring的-->
+    <context:component-scan base-package="com.zyc"/>
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!--3、为数据库连接池指定属性值-->
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.user}"/>
+        <property name="password" value="${db.password}"/>
+    </bean>
+
+    <!--配置SqlSessionFactoryBean-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--配置mapper映射文件的位置扫描-->
+        <property name="mapperLocations" value="classpath:com/zyc/mapper/*.xml"/>
+        <!--配置mybatis的配置文件路径-->
+        <property name="configLocation" value="classpath:mybatis/mybatis-conf.xml"/>
+    </bean>
+
+    <!--配置mapper接口的位置，方便生成代理对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.zyc.mapper"/>
+    </bean>
+</beans>

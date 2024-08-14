@@ -15,6 +15,7 @@
         <module>MyBatisGenerator</module>
         <module>SSM-03</module>
         <module>SSM-04</module>
+        <module>SSM-05</module>
     </modules>
 
     <properties>
